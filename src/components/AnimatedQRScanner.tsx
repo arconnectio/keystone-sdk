@@ -1,9 +1,37 @@
-import { OnResultFunction, QrReader, QrReaderProps } from "react-qr-reader"
+import { OnResultFunction, QrReader, QrReaderProps } from "react-qr-reader";
+import { arweaveResults } from "../utils/results";
+import { useEffect, useState } from "react";
+import { UR } from "@ngraveio/bc-ur";
 import useUrDecoder from "../hooks/useUrDecoder";
 
-export default function AnimatedQRScanner({ onError, logging = true, ...props }: Props) {
+export default function AnimatedQRScanner({ onSuccess, onError, onProgress, logging = true, ...props }: Props) {
   // bc-ur decoder
   const { urDecoder, reset } = useUrDecoder();
+
+  // progress percentage
+  const [progress, setProgress] = useState<number>(0);
+
+  useEffect(() => {
+    if (!onProgress) return;
+
+    onProgress(progress);
+  }, [progress]);
+
+  /**
+   * Handle error
+   */
+  function handleError(e: Error) {
+    if (!onError) return;
+    onError(e, retry);
+  }
+
+  /**
+   * Retry scan
+   */
+  function retry() {
+    setProgress(0);
+    reset();
+  }
 
   /**
    * Handle scanning
@@ -12,9 +40,9 @@ export default function AnimatedQRScanner({ onError, logging = true, ...props }:
     // check for errors or undefined result
     if (!!error || !result) {
       if (onError && !!error) {
-        onError(error, reset);
+        handleError(error);
       } else if (onError && !result) {
-        onError(new Error("Scanner result is undefined"), reset);
+        handleError(new Error("Scanner result is undefined"));
       }
 
       return;
@@ -24,7 +52,7 @@ export default function AnimatedQRScanner({ onError, logging = true, ...props }:
       // handle result
       processUR(result.getText());
     } catch (e: any) {
-      console.error(`[Arweave Keystone] Error processing UR: ${e?.message || e}`);
+      handleError(new Error(`Error processing UR: ${e?.message || e}`));
     }
   };
 
@@ -34,8 +62,17 @@ export default function AnimatedQRScanner({ onError, logging = true, ...props }:
   function processUR(ur: string) {
     if (!urDecoder.isComplete()) {
       urDecoder.receivePart(ur);
+      setProgress(urDecoder.getProgress());
     } else {
       const result = urDecoder.resultUR();
+
+      if (!arweaveResults.includes(result.type)) {
+        return handleError(new Error("Invalid QR type"));
+      }
+
+      if (onSuccess) {
+        onSuccess(result);
+      }
     }
   }
 
@@ -49,7 +86,12 @@ export default function AnimatedQRScanner({ onError, logging = true, ...props }:
   );
 }
 
-interface Props extends Omit<QrReaderProps, "onResult" | "scanDelay" | "constraints"> {
-  onError?: (error: Error, retryFunction: () => void) => any;
+type Props = Omit<QrReaderProps, "onResult" | "scanDelay" | "constraints"> & AnimatedScannerProps & {
   logging?: boolean;
+}
+
+export interface AnimatedScannerProps {
+  onSuccess?: (ur: UR) => any;
+  onError?: (error: Error, retryFunction: () => void) => any;
+  onProgress?: (progress: number) => any;
 }
