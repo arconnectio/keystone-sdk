@@ -23,7 +23,10 @@
       "require": "./dist/index.umd.js"
     }
   },
-  "dependencies": {},
+  "dependencies": {
+    "@ngraveio/bc-ur": "^1.1.6",
+    "react-qr-reader": "^3.0.0-beta-1"
+  },
   "devDependencies": {
     "@types/node": "^18.11.18",
     "@types/react": "^18.0.26",
