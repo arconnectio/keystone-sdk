@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@ngraveio/bc-ur": "^1.1.6",
-    "react-qr-reader": "^3.0.0-beta-1"
+    "react-qr-scanner": "^1.0.0-alpha.11"
   },
   "devDependencies": {
     "@babel/core": "^7.20.12",

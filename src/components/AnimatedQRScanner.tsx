@@ -1,10 +1,10 @@
-import { OnResultFunction, QrReader, QrReaderProps } from "react-qr-reader";
 import { arweaveResults } from "../utils/results";
 import { useEffect, useState } from "react";
 import { UR } from "@ngraveio/bc-ur";
 import useUrDecoder from "../hooks/useUrDecoder";
+import QrReader from "react-qr-scanner";
 
-export default function AnimatedQRScanner({ onSuccess, onError, onProgress, logging = true, ...props }: Props) {
+export default function AnimatedQRScanner({ onSuccess, onError, onProgress }: Props) {
   // bc-ur decoder
   const { urDecoder, reset } = useUrDecoder();
 
@@ -36,21 +36,18 @@ export default function AnimatedQRScanner({ onSuccess, onError, onProgress, logg
   /**
    * Handle scanning
    */
-  const processScanResult: OnResultFunction = (result, error) => {
-    // check for errors or undefined result
-    if (!!error || !result) {
-      if (onError && !!error) {
-        handleError(error);
-      } else if (onError && !result) {
-        handleError(new Error("Scanner result is undefined"));
-      }
+  const processScanResult = (data: string | null) => {
+    console.log("f")
+    // check for undefined result
+    if (!data) {
+      handleError(new Error("Scanner result is null"));
 
       return;
     }
 
     try {
       // handle result
-      processUR(result.getText());
+      processUR(data);
     } catch (e: any) {
       handleError(new Error(`Error processing UR: ${e?.message || e}`));
     }
@@ -78,23 +75,14 @@ export default function AnimatedQRScanner({ onSuccess, onError, onProgress, logg
 
   return (
     <QrReader
-      constraints={{ facingMode: "user" }}
-      scanDelay={100}
-      onResult={processScanResult}
-      videoStyle={{
-        objectFit: "cover",
-        objectPosition: "center"
-      }}
-      {...props}
+      delay={100}
+      onError={(error) => handleError(new Error(`Error scanning: ${error}`))}
+      onScan={processScanResult}
     />
   );
 }
 
-type Props = Omit<QrReaderProps, "onResult" | "scanDelay" | "constraints"> & AnimatedScannerProps & {
-  logging?: boolean;
-}
-
-export interface AnimatedScannerProps {
+export interface Props {
   onSuccess?: (ur: UR) => any;
   onError?: (error: Error, retryFunction: () => void) => any;
   onProgress?: (progress: number) => any;

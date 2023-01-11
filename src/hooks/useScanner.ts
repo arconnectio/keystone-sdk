@@ -1,6 +1,6 @@
-import { AnimatedScannerProps } from "../components/AnimatedQRScanner";
+import { Props } from "../components/AnimatedQRScanner";
+import { UR } from "@ngraveio/bc-ur";
 import { useState } from "react";
-import { UR } from "@ngraveio/bc-ur"
 
 export default function useScanner(onSuccess: (ur: UR) => any, onError: (e: Error) => any): ReturnType {
   const [progress, setProgress] = useState<number>(0);
@@ -27,7 +27,7 @@ export default function useScanner(onSuccess: (ur: UR) => any, onError: (e: Erro
 interface ReturnType {
   progress: number;
   retry: RetryFunction;
-  bindings: AnimatedScannerProps;
+  bindings: Props;
 }
 
 type RetryFunction = () => void;
