@@ -4,7 +4,7 @@ declare module "react-qr-scanner" {
   declare class QrReader extends Component<{
     delay?: number;
     onError?: (error: any) => void;
-    onScan?: (result: string | null) => void;
+    onScan?: (result: any) => void;
   }> {}
 
   export default QrReader;

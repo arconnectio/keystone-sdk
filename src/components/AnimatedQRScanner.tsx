@@ -4,26 +4,12 @@ import { UR } from "@ngraveio/bc-ur";
 import useUrDecoder from "../hooks/useUrDecoder";
 import QrReader from "react-qr-scanner";
 
-export default function AnimatedQRScanner({ onSuccess, onError, onProgress }: Props) {
+export default function AnimatedQRScanner({ onResult, onProgress }: Props) {
   // bc-ur decoder
   const { urDecoder, reset } = useUrDecoder();
 
   // progress percentage
   const [progress, setProgress] = useState<number>(0);
-
-  useEffect(() => {
-    if (!onProgress) return;
-
-    onProgress(progress);
-  }, [progress]);
-
-  /**
-   * Handle error
-   */
-  function handleError(e: Error) {
-    if (!onError) return;
-    onError(e, retry);
-  }
 
   /**
    * Retry scan
@@ -33,23 +19,26 @@ export default function AnimatedQRScanner({ onSuccess, onError, onProgress }: Pr
     reset();
   }
 
+  useEffect(() => {
+    if (!onProgress) return;
+
+    onProgress(progress, retry);
+  }, [progress]);
+
   /**
    * Handle scanning
    */
-  const processScanResult = (data: string | null) => {
-    console.log("f")
+  const processScanResult = (data: any) => {
     // check for undefined result
     if (!data) {
-      handleError(new Error("Scanner result is null"));
-
       return;
     }
 
     try {
       // handle result
-      processUR(data);
+      processUR(data.text);
     } catch (e: any) {
-      handleError(new Error(`Error processing UR: ${e?.message || e}`));
+      console.log(e)
     }
   };
 
@@ -64,11 +53,11 @@ export default function AnimatedQRScanner({ onSuccess, onError, onProgress }: Pr
       const result = urDecoder.resultUR();
 
       if (!arweaveResults.includes(result.type)) {
-        return handleError(new Error("Invalid QR type"));
+        return;
       }
 
-      if (onSuccess) {
-        onSuccess(result);
+      if (onResult) {
+        onResult(result);
       }
     }
   }
@@ -76,14 +65,12 @@ export default function AnimatedQRScanner({ onSuccess, onError, onProgress }: Pr
   return (
     <QrReader
       delay={100}
-      onError={(error) => handleError(new Error(`Error scanning: ${error}`))}
       onScan={processScanResult}
     />
   );
 }
 
 export interface Props {
-  onSuccess?: (ur: UR) => any;
-  onError?: (error: Error, retryFunction: () => void) => any;
-  onProgress?: (progress: number) => any;
+  onResult?: (ur: UR) => any;
+  onProgress?: (progress: number, retryFunction: () => void) => any;
 }
