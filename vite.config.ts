@@ -10,7 +10,7 @@ export default defineConfig({
       entry: path.resolve(__dirname, "src/index.ts"),
       name: "@arconnect/kit",
       formats: ["es", "umd"],
-      fileName: (format) => `index.${format}.js`
+      fileName: (format) => `index.${format}.js`,
     },
     rollupOptions: {
       external: ["react", "react-dom", "styled-components"],
@@ -18,9 +18,9 @@ export default defineConfig({
         globals: {
           react: "React",
           "react-dom": "ReactDOM",
-          "styled-components": "styled"
-        }
-      }
-    }
-  }
+          "styled-components": "styled",
+        },
+      },
+    },
+  },
 });
