@@ -81,6 +81,10 @@ export default function AnimatedQRScanner({ onSuccess, onError, onProgress, logg
       constraints={{ facingMode: "user" }}
       scanDelay={100}
       onResult={processScanResult}
+      videoStyle={{
+        objectFit: "cover",
+        objectPosition: "center"
+      }}
       {...props}
     />
   );
