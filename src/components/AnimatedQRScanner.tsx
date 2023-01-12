@@ -1,8 +1,8 @@
 import { arweaveResults } from "../utils/results";
-import { useEffect, useState } from "react";
-import { UR } from "@ngraveio/bc-ur";
 import useUrDecoder from "../hooks/useUrDecoder";
-import QrReader from "react-qr-scanner";
+import { useEffect, useState } from "react";
+import QrReader from "react-qr-reader";
+import { UR } from "@ngraveio/bc-ur";
 
 export default function AnimatedQRScanner({ onResult, onProgress }: Props) {
   // bc-ur decoder
@@ -19,6 +19,7 @@ export default function AnimatedQRScanner({ onResult, onProgress }: Props) {
     reset();
   }
 
+  // update progress
   useEffect(() => {
     if (!onProgress) return;
 
@@ -26,26 +27,10 @@ export default function AnimatedQRScanner({ onResult, onProgress }: Props) {
   }, [progress]);
 
   /**
-   * Handle scanning
-   */
-  const processScanResult = (data: any) => {
-    // check for undefined result
-    if (!data) {
-      return;
-    }
-
-    try {
-      // handle result
-      processUR(data.text);
-    } catch (e: any) {
-      console.log(e)
-    }
-  };
-
-  /**
    * Process data
    */
-  function processUR(ur: string) {
+  function processUR(ur: string | null) {
+    if (!ur) return;
     if (!urDecoder.isComplete()) {
       urDecoder.receivePart(ur);
       setProgress(urDecoder.getProgress());
@@ -64,8 +49,10 @@ export default function AnimatedQRScanner({ onResult, onProgress }: Props) {
 
   return (
     <QrReader
+      onScan={processUR}
       delay={100}
-      onScan={processScanResult}
+      style={{ width: "100%" }}
+      onError={() => {}}
     />
   );
 }
