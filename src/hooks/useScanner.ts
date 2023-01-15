@@ -16,7 +16,7 @@ export default function useScanner(onResult: (ur: UR) => any): ReturnType {
     bindings: {
       onProgress (progress, retry) {
         setProgress(progress);
-        setRetryFunction(retry);
+        //setRetryFunction(retry);
       },
       onResult
     }

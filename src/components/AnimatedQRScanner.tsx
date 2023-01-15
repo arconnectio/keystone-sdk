@@ -36,7 +36,7 @@ export default function AnimatedQRScanner({ onResult, onProgress }: Props) {
       setProgress(urDecoder.getProgress());
     } else {
       const result = urDecoder.resultUR();
-
+console.log(result)
       if (!arweaveResults.includes(result.type)) {
         return;
       }

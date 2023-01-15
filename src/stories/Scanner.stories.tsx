@@ -2,7 +2,7 @@ import AnimatedQRScanner from "../components/AnimatedQRScanner";
 import useScanner from "../hooks/useScanner";
 import { Buffer } from "buffer";
 
-globalThis.Buffer = Buffer;
+//globalThis.Buffer = Buffer;
 
 export default {
   name: "Scanner",

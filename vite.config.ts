@@ -1,11 +1,17 @@
-import { NodeGlobalsPolyfillPlugin } from "@esbuild-plugins/node-globals-polyfill";
-import { defineConfig } from "vite";
+import { nodePolyfills } from "vite-plugin-node-polyfills";
 import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
 import dts from "vite-plugin-dts";
 import path from "node:path";
 
 export default defineConfig({
-  plugins: [react(), dts({ insertTypesEntry: true })],
+  plugins: [
+    react(),
+    dts({ insertTypesEntry: true }),
+    nodePolyfills({
+      protocolImports: true
+    })
+  ],
   build: {
     lib: {
       entry: path.resolve(__dirname, "src/index.ts"),
@@ -22,17 +28,5 @@ export default defineConfig({
         },
       },
     },
-  },
-  optimizeDeps: {
-    esbuildOptions: {
-      define: {
-        global: 'globalThis'
-      },
-      plugins: [
-        NodeGlobalsPolyfillPlugin({
-          buffer: true
-        })
-      ]
-    }
   }
 });
