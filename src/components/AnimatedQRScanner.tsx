@@ -4,26 +4,18 @@ import { useEffect, useState } from "react";
 import QrReader from "react-qr-reader";
 import { UR } from "@ngraveio/bc-ur";
 
-export default function AnimatedQRScanner({ onResult, onProgress }: Props) {
+export default function AnimatedQRScanner({ onResult, onProgress, onError }: Props) {
   // bc-ur decoder
   const { urDecoder, reset } = useUrDecoder();
 
   // progress percentage
   const [progress, setProgress] = useState<number>(0);
 
-  /**
-   * Retry scan
-   */
-  function retry() {
-    setProgress(0);
-    reset();
-  }
-
   // update progress
   useEffect(() => {
     if (!onProgress) return;
 
-    onProgress(progress, retry);
+    onProgress(progress);
   }, [progress]);
 
   /**
@@ -33,11 +25,18 @@ export default function AnimatedQRScanner({ onResult, onProgress }: Props) {
     if (!ur) return;
     if (!urDecoder.isComplete()) {
       urDecoder.receivePart(ur);
-      setProgress(urDecoder.getProgress());
+      setProgress(urDecoder.getProgress() * 100);
     } else {
       const result = urDecoder.resultUR();
-console.log(result)
+
+      // if the result is invalid we reset the progress
+      // and call the error function
       if (!arweaveResults.includes(result.type)) {
+        reset();
+        setProgress(0);
+
+        if (onError) onError("invalid_result_type");
+
         return;
       }
 
@@ -52,12 +51,22 @@ console.log(result)
       onScan={processUR}
       delay={100}
       style={{ width: "100%" }}
-      onError={() => {}}
+      onError={() => {
+        if (onError) {
+          reset();
+          setProgress(0);
+          onError("scan_error");
+        }
+      }}
+      showViewFinder={false}
     />
   );
 }
 
 export interface Props {
   onResult?: (ur: UR) => any;
-  onProgress?: (progress: number, retryFunction: () => void) => any;
+  onError?: (error: ScanError) => any;
+  onProgress?: (progress: number) => any;
 }
+
+type ScanError = "invalid_result_type" | "scan_error";

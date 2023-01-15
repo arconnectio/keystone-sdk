@@ -23,9 +23,6 @@ export const Scanner = () => {
         <p>
           Progress {scanner.progress}
         </p>
-        <button onClick={scanner.retry}>
-          Retry
-        </button>
       </div>
     </div>
   );
