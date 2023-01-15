@@ -1,8 +1,5 @@
 import AnimatedQRScanner from "../components/AnimatedQRScanner";
 import useScanner from "../hooks/useScanner";
-import { Buffer } from "buffer";
-
-//globalThis.Buffer = Buffer;
 
 export default {
   name: "Scanner",
@@ -23,6 +20,9 @@ export const Scanner = () => {
         <p>
           Progress {scanner.progress}
         </p>
+        <button onClick={scanner.retry}>
+          Retry
+        </button>
       </div>
     </div>
   );

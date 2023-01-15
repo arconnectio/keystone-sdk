@@ -1,12 +1,17 @@
+import useUrDecoder, { UrDecoderHook } from "../hooks/useUrDecoder";
 import { arweaveResults } from "../utils/results";
-import useUrDecoder from "../hooks/useUrDecoder";
 import { useEffect, useState } from "react";
 import QrReader from "react-qr-reader";
 import { UR } from "@ngraveio/bc-ur";
 
-export default function AnimatedQRScanner({ onResult, onProgress, onError }: Props) {
+export default function AnimatedQRScanner({
+  onResult,
+  onProgress,
+  onError,
+  decoder
+}: Props) {
   // bc-ur decoder
-  const { urDecoder, reset } = useUrDecoder();
+  const { urDecoder, reset } = decoder;
 
   // progress percentage
   const [progress, setProgress] = useState<number>(0);
@@ -67,6 +72,7 @@ export interface Props {
   onResult?: (ur: UR) => any;
   onError?: (error: ScanError) => any;
   onProgress?: (progress: number) => any;
+  decoder: UrDecoderHook;
 }
 
 type ScanError = "invalid_result_type" | "scan_error";

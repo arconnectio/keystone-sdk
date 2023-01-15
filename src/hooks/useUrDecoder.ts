@@ -1,7 +1,7 @@
 import { URDecoder } from "@ngraveio/bc-ur";
 import { useState } from "react";
 
-export default function useUrDecoder() {
+export default function useUrDecoder(): UrDecoderHook {
   // bc-ur decoder
   const [urDecoder, setURDecoder] = useState(new URDecoder());
 
@@ -14,4 +14,9 @@ export default function useUrDecoder() {
     urDecoder,
     reset
   };
+}
+
+export interface UrDecoderHook {
+  urDecoder: URDecoder,
+  reset: () => void;
 }
