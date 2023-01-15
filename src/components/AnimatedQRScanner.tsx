@@ -1,4 +1,4 @@
-import useUrDecoder, { UrDecoderHook } from "../hooks/useUrDecoder";
+import { UrDecoderHook } from "../hooks/useUrDecoder";
 import { arweaveResults } from "../utils/results";
 import { useEffect, useState } from "react";
 import QrReader from "react-qr-reader";
