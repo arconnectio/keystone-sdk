@@ -1,5 +1,6 @@
-import { QRCode, IProps } from "react-qrcode-logo";
 import useUrEncoder from "../hooks/useUrEncoder";
+import { QRCodeCanvas } from "qrcode.react"
+import { ComponentProps } from "react";
 import { UR } from "@ngraveio/bc-ur";
 
 export default function AnimatedQRPlayer({
@@ -16,7 +17,7 @@ export default function AnimatedQRPlayer({
   );
   
   return (
-    <QRCode
+    <QRCodeCanvas
       value={currentData}
       size={size}
       {...props}
@@ -27,7 +28,7 @@ export default function AnimatedQRPlayer({
 const DEFAULT_SPEED = 250;
 const DEFAULT_MAX_FRAGMENT_LENGTH = 400;
 
-interface Props extends Omit<IProps, "value"> {
+interface Props extends Omit<ComponentProps<typeof QRCodeCanvas>, "value"> {
   data: UR;
   speed?: number;
   maxFragmentLength?: number;

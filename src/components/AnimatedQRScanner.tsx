@@ -8,7 +8,8 @@ export default function AnimatedQRScanner({
   onResult,
   onProgress,
   onError,
-  decoder
+  decoder,
+  validResults = arweaveResults
 }: Props) {
   // bc-ur decoder
   const { urDecoder, reset } = decoder;
@@ -36,7 +37,7 @@ export default function AnimatedQRScanner({
 
       // if the result is invalid we reset the progress
       // and call the error function
-      if (!arweaveResults.includes(result.type)) {
+      if (!validResults.includes(result.type)) {
         reset();
         setProgress(0);
 
@@ -73,6 +74,7 @@ export interface Props {
   onError?: (error: ScanError) => any;
   onProgress?: (progress: number) => any;
   decoder: UrDecoderHook;
+  validResults?: string[];
 }
 
 type ScanError = "invalid_result_type" | "scan_error";
